@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rain Sound Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('https://i.pinimg.com/originals/b8/16/ad/b816adb81f38dced4f3aabbb1bdf1b70.gif') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            padding: 50px;
+        }
+        button, select {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover, select:hover {
+            background-color: #2980b9;
+        }
+        #timerDisplay {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rain & Snore: The Ultimate Sleep Hack!</h1>
+    <audio id="rainAudio" loop>
+        <source src="Rain-sounds-for-sleep.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <br>
+    <select id="timerSelect">
+        <option value="1">1 Minute</option>
+        <option value="30">30 Minutes</option>
+        <option value="60">1 Hour</option>
+        <option value="90">1.5 Hours</option>
+    </select>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopAudio()">Stop</button>
+    <button onclick="addExtraTime()">Add 10 Min</button>
+    <div id="timerDisplay">Timer: --:--</div>
+    
+    <script>
+        const audio = document.getElementById("rainAudio");
+        let timer;
+        let remainingTime = 0;
+        let interval;
+
+        function startTimer() {
+            clearTimeout(timer);
+            clearInterval(interval);
+            const minutes = parseInt(document.getElementById("timerSelect").value);
+            remainingTime = minutes * 60;
+            updateTimerDisplay();
+            audio.play();
+            interval = setInterval(updateTimerDisplay, 1000);
+            timer = setTimeout(() => {
+                stopAudio();
+            }, remainingTime * 1000);
+        }
+
+        function stopAudio() {
+            audio.pause();
+            audio.currentTime = 0;
+            clearTimeout(timer);
+            clearInterval(interval);
+            document.getElementById("timerDisplay").innerText = "Timer: --:--";
+        }
+
+        function addExtraTime() {
+            remainingTime += 600; // Add 10 minutes (600 seconds)
+            updateTimerDisplay();
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                stopAudio();
+                alert("Rain sound stopped after extended time.");
+            }, remainingTime * 1000);
+        }
+
+        function updateTimerDisplay() {
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                document.getElementById("timerDisplay").innerText = "Timer: --:--";
+                return;
+            }
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            document.getElementById("timerDisplay").innerText = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            remainingTime--;
+        }
+    </script>
+</body>
+</html>
