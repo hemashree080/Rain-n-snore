@@ -147,7 +147,19 @@
     let timer, interval;
     let remainingTime = 0, totalTime = 0;
     let isPlaying = false, isPaused = false;
+timerSelect.addEventListener("change", () => {
+  if (!isPlaying && !isPaused) return; // Do nothing if nothing is running
 
+  const newTime = parseInt(timerSelect.value) * 60;
+  const timeElapsed = totalTime - remainingTime;
+
+  totalTime = newTime;
+  remainingTime = totalTime - timeElapsed;
+
+  updateTimerDisplay();
+  clearTimeout(timer);
+  timer = setTimeout(stopAudio, remainingTime * 1000);
+});
     function togglePlayPause() {
       if (isPlaying) pauseAudio();
       else startTimer();
