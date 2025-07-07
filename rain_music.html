@@ -37,6 +37,7 @@
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
+      margin-bottom: 20px;
     }
 
     .play-pause-btn {
@@ -71,10 +72,26 @@
     }
 
     #timerDisplay {
-      margin-top: 20px;
+      margin: 10px 0;
       font-size: 22px;
       font-weight: bold;
       text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .progress-container {
+      width: 80%;
+      margin: 0 auto 30px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      transition: width 1s linear;
     }
 
     footer {
@@ -121,6 +138,10 @@
 
   <div id="timerDisplay">Timer: --:--</div>
 
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
   <footer>
     Made with <i class="fas fa-heart"></i> by Hema
   </footer>
@@ -129,10 +150,12 @@
     const audio = document.getElementById("rainAudio");
     const playPauseBtn = document.getElementById("playPauseBtn");
     const playPauseIcon = document.getElementById("playPauseIcon");
+    const progressBar = document.getElementById("progressBar");
 
     let timer;
     let interval;
     let remainingTime = 0;
+    let totalTime = 0;
     let isPaused = false;
     let isPlaying = false;
 
@@ -160,11 +183,17 @@
 
       const minutes = parseInt(document.getElementById("timerSelect").value);
       remainingTime = minutes * 60;
+      totalTime = remainingTime;
 
       updateTimerDisplay();
+      updateProgressBar();
       audio.play();
 
-      interval = setInterval(updateTimerDisplay, 1000);
+      interval = setInterval(() => {
+        updateTimerDisplay();
+        updateProgressBar();
+      }, 1000);
+
       timer = setTimeout(stopAudio, remainingTime * 1000);
       updateIcon('pause');
       isPlaying = true;
@@ -187,16 +216,20 @@
       clearTimeout(timer);
       clearInterval(interval);
       remainingTime = 0;
+      totalTime = 0;
       isPaused = false;
       isPlaying = false;
       updateIcon('play');
       document.getElementById("timerDisplay").innerText = "Timer: --:--";
+      progressBar.style.width = "0%";
     }
 
     function addExtraTime() {
       if (remainingTime <= 0) return;
       remainingTime += 600;
+      totalTime += 600;
       updateTimerDisplay();
+      updateProgressBar();
       clearTimeout(timer);
       timer = setTimeout(stopAudio, remainingTime * 1000);
     }
@@ -212,6 +245,12 @@
       const seconds = remainingTime % 60;
       document.getElementById("timerDisplay").innerText = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       remainingTime--;
+    }
+
+    function updateProgressBar() {
+      if (totalTime === 0) return;
+      const percent = ((totalTime - remainingTime) / totalTime) * 100;
+      progressBar.style.width = percent + "%";
     }
 
     function updateIcon(state) {
