@@ -12,114 +12,104 @@
       background-size: cover;
       color: white;
       text-align: center;
-      padding: 30px 15px;
       margin: 0;
+      padding: 0;
     }
 
     h1 {
+      margin: 30px 20px 10px;
       font-size: 2em;
-      margin-bottom: 20px;
       text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
     }
 
-    .card {
+    .player-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 25px 20px;
       background: rgba(0, 0, 0, 0.4);
-      padding: 25px;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      display: inline-block;
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
     }
 
-    select {
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      margin-bottom: 20px;
-      width: 100%;
-    }
-
-    button {
-      background-color: rgba(255, 255, 255, 0.15);
-      border: none;
-      color: white;
-      font-size: 16px;
-      padding: 12px 20px;
-      border-radius: 30px;
-      cursor: pointer;
-      margin: 10px 5px;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .play-pause-btn {
-      background-color: white;
-      color: #3498db;
-      font-size: 24px;
-      padding: 20px;
-      border-radius: 50%;
-      border: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      margin: 15px 0;
-    }
-
-    #timerDisplay {
-      font-size: 20px;
-      font-weight: bold;
-      margin: 20px 0 10px;
-      text-shadow: 1px 1px 5px black;
-    }
-
-    .progress-container {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.3);
-      height: 8px;
-      border-radius: 5px;
-      overflow: hidden;
-      margin: 0 auto 25px;
+    .progress-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 5px;
     }
 
     .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #00ffd5;
-      transition: width 1s linear;
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      outline: none;
+      border-radius: 4px;
+      background-image: linear-gradient(#00ffd5, #00ffd5);
+      background-repeat: no-repeat;
+      background-size: 0% 100%;
+      margin: 8px 0;
+    }
+
+    .progress-bar::-webkit-slider-thumb {
+      appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: white;
+      border: 1px solid #aaa;
+      cursor: pointer;
+      margin-top: -5px;
+    }
+
+    .main-controls {
+      margin: 20px 0;
+    }
+
+    #playPauseBtn {
+      font-size: 32px;
+      background: white;
+      color: #3498db;
+      padding: 20px;
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+    }
+
+    select, button {
+      margin: 8px 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover, select:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    #timerDisplay {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 15px 0 10px;
+      text-shadow: 1px 1px 3px black;
     }
 
     footer {
-      margin-top: 20px;
-      font-size: 15px;
       font-style: italic;
+      font-size: 14px;
       color: #f0f0f0;
-      text-shadow: 1px 1px 4px black;
+      margin: 25px 0;
+      text-shadow: 1px 1px 3px black;
     }
 
     footer i {
       color: #ff5e7e;
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        padding: 20px 15px;
-      }
-
-      button {
-        width: 100%;
-        font-size: 15px;
-      }
-
-      .play-pause-btn {
-        font-size: 22px;
-        padding: 18px;
-      }
     }
   </style>
 </head>
@@ -127,7 +117,7 @@
 
   <h1><i class="fas fa-cloud-rain"></i> Rain & Snore</h1>
 
-  <div class="card">
+  <div class="player-container">
     <audio id="rainAudio" loop>
       <source src="Rain-sounds-for-sleep.mp3" type="audio/mpeg" />
     </audio>
@@ -138,31 +128,34 @@
       <option value="60">1 Hour</option>
       <option value="90">1.5 Hours</option>
     </select>
-
-    <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
-      <i id="playPauseIcon" class="fas fa-play"></i>
-    </button>
-
-    <div>
-      <button onclick="addExtraTime()"><i class="fas fa-plus"></i> Add 10 Min</button>
-      <button onclick="stopAudio()"><i class="fas fa-stop"></i> Stop</button>
-    </div>
+    <button onclick="addExtraTime()"><i class="fas fa-plus"></i> Add 10 Min</button>
+    <button onclick="stopAudio()"><i class="fas fa-stop"></i> Stop</button>
 
     <div id="timerDisplay">Timer: --:--</div>
 
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-section">
+      <span id="currentTime">00:00</span>
+      <span id="duration">--:--</span>
+    </div>
+
+    <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100" />
+
+    <div class="main-controls">
+      <button id="playPauseBtn" onclick="togglePlayPause()">
+        <i id="playPauseIcon" class="fas fa-play"></i>
+      </button>
     </div>
   </div>
 
-  <footer>
-    Made with <i class="fas fa-heart"></i> by Hema
-  </footer>
+  <footer>Made with <i class="fas fa-heart"></i> by Hema</footer>
 
   <script>
     const audio = document.getElementById("rainAudio");
-    const playPauseIcon = document.getElementById("playPauseIcon");
-    const progressBar = document.getElementById("progressBar");
+    const playBtn = document.getElementById("playPauseBtn");
+    const playIcon = document.getElementById("playPauseIcon");
+    const progress = document.getElementById("progress");
+    const currentTimeEl = document.getElementById("currentTime");
+    const durationEl = document.getElementById("duration");
     const timerDisplay = document.getElementById("timerDisplay");
 
     let timer, interval;
@@ -170,7 +163,8 @@
     let isPlaying = false, isPaused = false;
 
     function togglePlayPause() {
-      isPlaying ? pauseAudio() : startTimer();
+      if (isPlaying) pauseAudio();
+      else startTimer();
     }
 
     function startTimer() {
@@ -180,94 +174,98 @@
       } else {
         clearTimers();
         totalTime = remainingTime = parseInt(timerSelect.value) * 60;
-        updateTimerDisplay(); updateProgressBar();
+        updateTimerDisplay();
+        updateProgress();
         audio.play(); isPlaying = true;
+        setDuration();
       }
-      setupInterval();
-      updateIcon('pause');
-      setupMediaSession();
-    }
-
-    function setupInterval() {
-      clearTimers();
       interval = setInterval(tick, 1000);
       timer = setTimeout(stopAudio, remainingTime * 1000);
-    }
-
-    function resumeAudio() {
-      audio.play(); isPlaying = true;
-      setupInterval();
+      playIcon.className = "fas fa-pause";
     }
 
     function pauseAudio() {
       isPaused = true; isPlaying = false;
-      audio.pause(); clearTimers(); updateIcon('play');
+      audio.pause(); clearTimers();
+      playIcon.className = "fas fa-play";
     }
 
     function stopAudio() {
       audio.pause(); audio.currentTime = 0;
+      isPlaying = isPaused = false;
       clearTimers(); remainingTime = totalTime = 0;
-      isPaused = isPlaying = false;
       timerDisplay.innerText = "Timer: --:--";
-      progressBar.style.width = '0%';
-      updateIcon('play');
+      progress.value = 0;
+      currentTimeEl.innerText = "00:00";
+      durationEl.innerText = "--:--";
+      playIcon.className = "fas fa-play";
+    }
+
+    function resumeAudio() {
+      audio.play(); isPlaying = true;
+      interval = setInterval(tick, 1000);
+      timer = setTimeout(stopAudio, remainingTime * 1000);
+      playIcon.className = "fas fa-pause";
     }
 
     function addExtraTime() {
       if (!totalTime) return;
       totalTime += 600;
       remainingTime += 600;
-      updateTimerDisplay(); updateProgressBar();
+      updateTimerDisplay();
+      updateProgress();
       clearTimeout(timer);
       timer = setTimeout(stopAudio, remainingTime * 1000);
     }
 
     function tick() {
       if (remainingTime <= 0) return;
-      remainingTime--; updateTimerDisplay(); updateProgressBar();
+      remainingTime--;
+      updateTimerDisplay();
+      updateProgress();
     }
 
     function updateTimerDisplay() {
-      const m = Math.floor(remainingTime / 60),
-            s = remainingTime % 60;
-      timerDisplay.innerText = `Timer: ${m}:${s < 10 ? '0' + s : s}`;
+      const m = Math.floor(remainingTime / 60);
+      const s = remainingTime % 60;
+      timerDisplay.innerText = `Timer: ${m}:${s < 10 ? "0" + s : s}`;
     }
 
-    function updateProgressBar() {
-      progressBar.style.width = totalTime
-        ? `${((totalTime - remainingTime) / totalTime) * 100}%`
-        : '0%';
+    function updateProgress() {
+      const value = (audio.currentTime / audio.duration) * 100;
+      progress.value = value || 0;
+      progress.style.backgroundSize = `${progress.value}% 100%`;
+
+      const m = Math.floor(audio.currentTime / 60);
+      const s = Math.floor(audio.currentTime % 60);
+      currentTimeEl.textContent = `${m}:${s < 10 ? "0" + s : s}`;
     }
+
+    progress.addEventListener("input", () => {
+      audio.currentTime = (progress.value / 100) * audio.duration;
+    });
+
+    audio.addEventListener("loadedmetadata", setDuration);
+
+    function setDuration() {
+      const m = Math.floor(audio.duration / 60);
+      const s = Math.floor(audio.duration % 60);
+      durationEl.textContent = `${m}:${s < 10 ? "0" + s : s}`;
+    }
+
+    audio.addEventListener("timeupdate", updateProgress);
 
     function clearTimers() {
       clearInterval(interval);
       clearTimeout(timer);
     }
 
-    function updateIcon(state) {
-      playPauseIcon.className = state === 'play'
-        ? 'fas fa-play'
-        : 'fas fa-pause';
-    }
-
-    function setupMediaSession() {
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: 'Rain & Snore Sleep Timer',
-          artist: 'Hema',
-          artwork: [{ src: 'https://i.imgur.com/UZTQyDg.png', sizes: '192x192', type: 'image/png' }]
-        });
-        navigator.mediaSession.setActionHandler('play', startTimer);
-        navigator.mediaSession.setActionHandler('pause', pauseAudio);
-        navigator.mediaSession.setActionHandler('stop', stopAudio);
-      }
-    }
-
-    audio.addEventListener('pause', () => {
+    // External media panel sync
+    audio.addEventListener("pause", () => {
       if (isPlaying && !isPaused) pauseAudio();
     });
 
-    audio.addEventListener('play', () => {
+    audio.addEventListener("play", () => {
       if (!isPlaying && isPaused) resumeAudio();
     });
   </script>
