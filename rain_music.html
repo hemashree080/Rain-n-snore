@@ -53,13 +53,6 @@
       text-shadow: 1px 1px 3px black;
     }
 
-    .progress-time {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin: 0 4px;
-    }
-
     .progress-bar {
       width: 100%;
       appearance: none;
@@ -133,11 +126,6 @@
 
     <div id="timerDisplay">Timer: --:--</div>
 
-    <div class="progress-time">
-      <span id="currentTime">00:00</span>
-      <span id="duration">--:--</span>
-    </div>
-
     <input type="range" id="progress" class="progress-bar" value="0" min="0" max="100" />
 
     <div class="main-controls">
@@ -153,8 +141,6 @@
     const audio = document.getElementById("rainAudio");
     const playIcon = document.getElementById("playPauseIcon");
     const progress = document.getElementById("progress");
-    const currentTimeEl = document.getElementById("currentTime");
-    const durationEl = document.getElementById("duration");
     const timerDisplay = document.getElementById("timerDisplay");
 
     let timer, interval;
@@ -176,7 +162,6 @@
         updateTimerDisplay();
         updateProgress();
         audio.play(); isPlaying = true;
-        setDuration();
       }
       interval = setInterval(tick, 1000);
       timer = setTimeout(stopAudio, remainingTime * 1000);
@@ -195,8 +180,6 @@
       clearTimers(); remainingTime = totalTime = 0;
       timerDisplay.innerText = "Timer: --:--";
       progress.value = 0;
-      currentTimeEl.innerText = "00:00";
-      durationEl.innerText = "--:--";
       playIcon.className = "fas fa-play";
     }
 
@@ -234,23 +217,11 @@
       const value = (audio.currentTime / audio.duration) * 100;
       progress.value = value || 0;
       progress.style.backgroundSize = `${progress.value}% 100%`;
-
-      const m = Math.floor(audio.currentTime / 60);
-      const s = Math.floor(audio.currentTime % 60);
-      currentTimeEl.textContent = `${m}:${s < 10 ? "0" + s : s}`;
     }
 
     progress.addEventListener("input", () => {
       audio.currentTime = (progress.value / 100) * audio.duration;
     });
-
-    audio.addEventListener("loadedmetadata", setDuration);
-
-    function setDuration() {
-      const m = Math.floor(audio.duration / 60);
-      const s = Math.floor(audio.duration % 60);
-      durationEl.textContent = `${m}:${s < 10 ? "0" + s : s}`;
-    }
 
     audio.addEventListener("timeupdate", updateProgress);
 
@@ -259,7 +230,7 @@
       clearTimeout(timer);
     }
 
-    // Sync with external controls
+    // External control sync
     audio.addEventListener("pause", () => {
       if (isPlaying && !isPaused) pauseAudio();
     });
