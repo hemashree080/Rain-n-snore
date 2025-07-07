@@ -142,6 +142,7 @@
     const playIcon = document.getElementById("playPauseIcon");
     const progress = document.getElementById("progress");
     const timerDisplay = document.getElementById("timerDisplay");
+    const timerSelect = document.getElementById("timerSelect");
 
     let timer, interval;
     let remainingTime = 0, totalTime = 0;
@@ -230,7 +231,7 @@
       clearTimeout(timer);
     }
 
-    // External control sync
+    // Sync with external controls
     audio.addEventListener("pause", () => {
       if (isPlaying && !isPaused) pauseAudio();
     });
