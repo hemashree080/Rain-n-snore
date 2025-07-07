@@ -13,111 +13,111 @@
       color: white;
       text-align: center;
       padding: 30px 15px;
+      margin: 0;
     }
 
     h1 {
       font-size: 2em;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
       margin-bottom: 20px;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
     }
 
     select {
-      font-size: 18px;
+      font-size: 16px;
       padding: 10px;
       border-radius: 8px;
       border: none;
-      margin: 15px auto;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
       color: white;
+      margin-bottom: 20px;
+      width: 100%;
     }
 
-    .controls-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      margin: 20px auto;
+    button {
+      background-color: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 12px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      margin: 10px 5px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
     }
 
     .play-pause-btn {
       background-color: white;
       color: #3498db;
-      font-size: 28px;
+      font-size: 24px;
       padding: 20px;
       border-radius: 50%;
       border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    .play-pause-btn:hover {
-      background-color: #f0f0f0;
-    }
-
-    .additional-controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .icon-btn {
-      background-color: rgba(255, 255, 255, 0.15);
-      border: none;
-      color: white;
-      font-size: 18px;
-      padding: 12px 18px;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .icon-btn:hover {
-      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      margin: 15px 0;
     }
 
     #timerDisplay {
-      margin-top: 10px;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+      margin: 20px 0 10px;
+      text-shadow: 1px 1px 5px black;
     }
 
     .progress-container {
-      width: 90%;
-      max-width: 400px;
-      margin: 20px auto;
-      height: 8px;
+      width: 100%;
       background: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
+      height: 8px;
+      border-radius: 5px;
       overflow: hidden;
+      margin: 0 auto 25px;
     }
 
     .progress-bar {
       height: 100%;
       width: 0%;
-      background: #00ffcc;
+      background: #00ffd5;
       transition: width 1s linear;
     }
 
     footer {
-      margin-top: 40px;
-      font-size: 16px;
+      margin-top: 20px;
+      font-size: 15px;
       font-style: italic;
       color: #f0f0f0;
+      text-shadow: 1px 1px 4px black;
     }
 
-    footer i { color: #ff5e7e; }
+    footer i {
+      color: #ff5e7e;
+    }
 
-    @media (max-width: 500px) {
-      .additional-controls {
-        flex-direction: column;
-        gap: 10px;
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px 15px;
       }
+
+      button {
+        width: 100%;
+        font-size: 15px;
+      }
+
       .play-pause-btn {
-        font-size: 26px;
+        font-size: 22px;
         padding: 18px;
       }
     }
@@ -127,36 +127,32 @@
 
   <h1><i class="fas fa-cloud-rain"></i> Rain & Snore</h1>
 
-  <audio id="rainAudio" loop>
-    <source src="Rain-sounds-for-sleep.mp3" type="audio/mpeg">
-  </audio>
+  <div class="card">
+    <audio id="rainAudio" loop>
+      <source src="Rain-sounds-for-sleep.mp3" type="audio/mpeg" />
+    </audio>
 
-  <select id="timerSelect">
-    <option value="1">1 Min</option>
-    <option value="30">30 Min</option>
-    <option value="60">1 Hour</option>
-    <option value="90">1.5 Hour</option>
-  </select>
+    <select id="timerSelect">
+      <option value="1">1 Minute</option>
+      <option value="30">30 Minutes</option>
+      <option value="60">1 Hour</option>
+      <option value="90">1.5 Hours</option>
+    </select>
 
-  <div class="controls-wrapper">
     <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
       <i id="playPauseIcon" class="fas fa-play"></i>
     </button>
 
-    <div class="additional-controls">
-      <button class="icon-btn" onclick="addExtraTime()">
-        <i class="fas fa-plus"></i> Add 10 Min
-      </button>
-      <button class="icon-btn" onclick="stopAudio()">
-        <i class="fas fa-stop"></i> Stop
-      </button>
+    <div>
+      <button onclick="addExtraTime()"><i class="fas fa-plus"></i> Add 10 Min</button>
+      <button onclick="stopAudio()"><i class="fas fa-stop"></i> Stop</button>
     </div>
-  </div>
 
-  <div id="timerDisplay">Timer: --:--</div>
+    <div id="timerDisplay">Timer: --:--</div>
 
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
   </div>
 
   <footer>
@@ -259,9 +255,7 @@
         navigator.mediaSession.metadata = new MediaMetadata({
           title: 'Rain & Snore Sleep Timer',
           artist: 'Hema',
-          artwork: [
-            { src: 'https://i.imgur.com/UZTQyDg.png', sizes: '192x192', type: 'image/png' }
-          ]
+          artwork: [{ src: 'https://i.imgur.com/UZTQyDg.png', sizes: '192x192', type: 'image/png' }]
         });
         navigator.mediaSession.setActionHandler('play', startTimer);
         navigator.mediaSession.setActionHandler('pause', pauseAudio);
