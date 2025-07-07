@@ -39,11 +39,28 @@
       margin: 20px auto;
     }
 
-    .icon-row {
+    .play-pause-btn {
+      background-color: white;
+      color: #3498db;
+      font-size: 28px;
+      padding: 20px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .play-pause-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    .additional-controls {
       display: flex;
       justify-content: center;
       gap: 20px;
       flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .icon-btn {
@@ -59,22 +76,6 @@
 
     .icon-btn:hover {
       background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .play-pause-btn {
-      background-color: white;
-      color: #3498db;
-      font-size: 28px;
-      padding: 20px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    .play-pause-btn:hover {
-      background-color: #f0f0f0;
     }
 
     #timerDisplay {
@@ -108,12 +109,10 @@
       color: #f0f0f0;
     }
 
-    footer i {
-      color: #ff5e7e;
-    }
+    footer i { color: #ff5e7e; }
 
     @media (max-width: 500px) {
-      .icon-row {
+      .additional-controls {
         flex-direction: column;
         gap: 10px;
       }
@@ -130,15 +129,13 @@
 
   <audio id="rainAudio" loop>
     <source src="Rain-sounds-for-sleep.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
   </audio>
 
   <select id="timerSelect">
-    <option value="1">1 Minute</option>
-    <option value="10">10 Minute</option>
-    <option value="30">30 Minutes</option>
+    <option value="1">1 Min</option>
+    <option value="30">30 Min</option>
     <option value="60">1 Hour</option>
-    <option value="90">1.5 Hours</option>
+    <option value="90">1.5 Hour</option>
   </select>
 
   <div class="controls-wrapper">
@@ -146,7 +143,7 @@
       <i id="playPauseIcon" class="fas fa-play"></i>
     </button>
 
-    <div class="icon-row">
+    <div class="additional-controls">
       <button class="icon-btn" onclick="addExtraTime()">
         <i class="fas fa-plus"></i> Add 10 Min
       </button>
@@ -173,112 +170,111 @@
     const timerDisplay = document.getElementById("timerDisplay");
 
     let timer, interval;
-    let remainingTime = 0;
-    let totalTime = 0;
-    let isPaused = false;
-    let isPlaying = false;
+    let remainingTime = 0, totalTime = 0;
+    let isPlaying = false, isPaused = false;
 
     function togglePlayPause() {
-      if (!isPlaying) {
-        startTimer();
-      } else {
-        pauseAudio();
-      }
+      isPlaying ? pauseAudio() : startTimer();
     }
 
     function startTimer() {
       if (isPaused) {
         isPaused = false;
-        isPlaying = true;
-        audio.play();
-        interval = setInterval(tick, 1000);
-        timer = setTimeout(stopAudio, remainingTime * 1000);
-        updateIcon('pause');
-        return;
+        resumeAudio();
+      } else {
+        clearTimers();
+        totalTime = remainingTime = parseInt(timerSelect.value) * 60;
+        updateTimerDisplay(); updateProgressBar();
+        audio.play(); isPlaying = true;
       }
+      setupInterval();
+      updateIcon('pause');
+      setupMediaSession();
+    }
 
-      clearTimeout(timer);
-      clearInterval(interval);
-
-      const minutes = parseInt(document.getElementById("timerSelect").value);
-      totalTime = remainingTime = minutes * 60;
-
-      updateTimerDisplay();
-      updateProgressBar();
-      audio.play();
-      isPlaying = true;
-
+    function setupInterval() {
+      clearTimers();
       interval = setInterval(tick, 1000);
       timer = setTimeout(stopAudio, remainingTime * 1000);
-      updateIcon('pause');
+    }
+
+    function resumeAudio() {
+      audio.play(); isPlaying = true;
+      setupInterval();
     }
 
     function pauseAudio() {
-      isPaused = true;
-      isPlaying = false;
-      audio.pause();
-      clearTimeout(timer);
-      clearInterval(interval);
-      updateIcon('play');
+      isPaused = true; isPlaying = false;
+      audio.pause(); clearTimers(); updateIcon('play');
     }
 
     function stopAudio() {
-      audio.pause();
-      audio.currentTime = 0;
-      clearTimeout(timer);
-      clearInterval(interval);
-      remainingTime = 0;
-      totalTime = 0;
-      isPaused = false;
-      isPlaying = false;
-      updateIcon('play');
+      audio.pause(); audio.currentTime = 0;
+      clearTimers(); remainingTime = totalTime = 0;
+      isPaused = isPlaying = false;
       timerDisplay.innerText = "Timer: --:--";
-      progressBar.style.width = "0%";
+      progressBar.style.width = '0%';
+      updateIcon('play');
     }
 
     function addExtraTime() {
-      if (remainingTime <= 0) return;
-      remainingTime += 600;
+      if (!totalTime) return;
       totalTime += 600;
-      updateTimerDisplay();
-      updateProgressBar();
+      remainingTime += 600;
+      updateTimerDisplay(); updateProgressBar();
       clearTimeout(timer);
       timer = setTimeout(stopAudio, remainingTime * 1000);
     }
 
     function tick() {
-      if (remainingTime <= 0) {
-        clearInterval(interval);
-        return;
-      }
-      remainingTime--;
-      updateTimerDisplay();
-      updateProgressBar();
+      if (remainingTime <= 0) return;
+      remainingTime--; updateTimerDisplay(); updateProgressBar();
     }
 
     function updateTimerDisplay() {
-      const min = Math.floor(remainingTime / 60);
-      const sec = remainingTime % 60;
-      timerDisplay.innerText = `Timer: ${min}:${sec < 10 ? '0' : ''}${sec}`;
+      const m = Math.floor(remainingTime / 60),
+            s = remainingTime % 60;
+      timerDisplay.innerText = `Timer: ${m}:${s < 10 ? '0' + s : s}`;
     }
 
     function updateProgressBar() {
-      if (totalTime === 0) return;
-      const percent = ((totalTime - remainingTime) / totalTime) * 100;
-      progressBar.style.width = `${percent}%`;
+      progressBar.style.width = totalTime
+        ? `${((totalTime - remainingTime) / totalTime) * 100}%`
+        : '0%';
+    }
+
+    function clearTimers() {
+      clearInterval(interval);
+      clearTimeout(timer);
     }
 
     function updateIcon(state) {
-      playPauseIcon.className = state === 'play' ? 'fas fa-play' : 'fas fa-pause';
+      playPauseIcon.className = state === 'play'
+        ? 'fas fa-play'
+        : 'fas fa-pause';
     }
 
-    // External pause handler
+    function setupMediaSession() {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: 'Rain & Snore Sleep Timer',
+          artist: 'Hema',
+          artwork: [
+            { src: 'https://i.imgur.com/UZTQyDg.png', sizes: '192x192', type: 'image/png' }
+          ]
+        });
+        navigator.mediaSession.setActionHandler('play', startTimer);
+        navigator.mediaSession.setActionHandler('pause', pauseAudio);
+        navigator.mediaSession.setActionHandler('stop', stopAudio);
+      }
+    }
+
     audio.addEventListener('pause', () => {
       if (isPlaying && !isPaused) pauseAudio();
     });
 
     audio.addEventListener('play', () => {
-      if (!isPlaying && isPaused) startTimer();
+      if (!isPlaying && isPaused) resumeAudio();
     });
   </script>
 </body>
