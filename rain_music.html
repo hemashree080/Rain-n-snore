@@ -4,21 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rain Sound Timer</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: url('https://i.pinimg.com/originals/b8/16/ad/b816adb81f38dced4f3aabbb1bdf1b70.gif') no-repeat center center fixed;
       background-size: cover;
       color: white;
       text-align: center;
-      padding: 30px 20px;
+      padding: 30px 15px;
     }
 
     h1 {
       font-size: 2em;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
       margin-bottom: 20px;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
     }
 
     select {
@@ -26,34 +26,24 @@
       padding: 10px;
       border-radius: 8px;
       border: none;
-      margin: 10px 0 20px 0;
+      margin: 15px auto;
       background: rgba(255, 255, 255, 0.2);
       color: white;
     }
 
-    .music-controls {
+    .controls-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin: 20px auto;
+    }
+
+    .icon-row {
       display: flex;
       justify-content: center;
-      align-items: center;
       gap: 20px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .play-pause-btn {
-      background-color: white;
-      color: #3498db;
-      font-size: 28px;
-      padding: 18px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-
-    .play-pause-btn:hover {
-      background-color: #f0f0f0;
     }
 
     .icon-btn {
@@ -61,7 +51,7 @@
       border: none;
       color: white;
       font-size: 18px;
-      padding: 12px 20px;
+      padding: 12px 18px;
       border-radius: 30px;
       cursor: pointer;
       transition: background-color 0.3s;
@@ -71,16 +61,33 @@
       background-color: rgba(255, 255, 255, 0.3);
     }
 
+    .play-pause-btn {
+      background-color: white;
+      color: #3498db;
+      font-size: 28px;
+      padding: 20px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .play-pause-btn:hover {
+      background-color: #f0f0f0;
+    }
+
     #timerDisplay {
-      margin: 10px 0;
+      margin-top: 10px;
       font-size: 22px;
       font-weight: bold;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
     }
 
     .progress-container {
-      width: 80%;
-      margin: 0 auto 30px;
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
       height: 8px;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
@@ -104,6 +111,17 @@
     footer i {
       color: #ff5e7e;
     }
+
+    @media (max-width: 500px) {
+      .icon-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .play-pause-btn {
+        font-size: 26px;
+        padding: 18px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -122,18 +140,19 @@
     <option value="90">1.5 Hours</option>
   </select>
 
-  <div class="music-controls">
-    <button class="icon-btn" onclick="addExtraTime()" title="Add 10 Minutes">
-      <i class="fas fa-plus"></i> Add 10 Min
-    </button>
-
+  <div class="controls-wrapper">
     <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
       <i id="playPauseIcon" class="fas fa-play"></i>
     </button>
 
-    <button class="icon-btn" onclick="stopAudio()" title="Stop">
-      <i class="fas fa-stop"></i> Stop
-    </button>
+    <div class="icon-row">
+      <button class="icon-btn" onclick="addExtraTime()">
+        <i class="fas fa-plus"></i> Add 10 Min
+      </button>
+      <button class="icon-btn" onclick="stopAudio()">
+        <i class="fas fa-stop"></i> Stop
+      </button>
+    </div>
   </div>
 
   <div id="timerDisplay">Timer: --:--</div>
@@ -148,12 +167,11 @@
 
   <script>
     const audio = document.getElementById("rainAudio");
-    const playPauseBtn = document.getElementById("playPauseBtn");
     const playPauseIcon = document.getElementById("playPauseIcon");
     const progressBar = document.getElementById("progressBar");
+    const timerDisplay = document.getElementById("timerDisplay");
 
-    let timer;
-    let interval;
+    let timer, interval;
     let remainingTime = 0;
     let totalTime = 0;
     let isPaused = false;
@@ -170,11 +188,11 @@
     function startTimer() {
       if (isPaused) {
         isPaused = false;
+        isPlaying = true;
         audio.play();
-        interval = setInterval(updateTimerDisplay, 1000);
+        interval = setInterval(tick, 1000);
         timer = setTimeout(stopAudio, remainingTime * 1000);
         updateIcon('pause');
-        isPlaying = true;
         return;
       }
 
@@ -182,32 +200,25 @@
       clearInterval(interval);
 
       const minutes = parseInt(document.getElementById("timerSelect").value);
-      remainingTime = minutes * 60;
-      totalTime = remainingTime;
+      totalTime = remainingTime = minutes * 60;
 
       updateTimerDisplay();
       updateProgressBar();
       audio.play();
+      isPlaying = true;
 
-      interval = setInterval(() => {
-        updateTimerDisplay();
-        updateProgressBar();
-      }, 1000);
-
+      interval = setInterval(tick, 1000);
       timer = setTimeout(stopAudio, remainingTime * 1000);
       updateIcon('pause');
-      isPlaying = true;
     }
 
     function pauseAudio() {
-      if (isPlaying && remainingTime > 0) {
-        isPaused = true;
-        isPlaying = false;
-        audio.pause();
-        clearTimeout(timer);
-        clearInterval(interval);
-        updateIcon('play');
-      }
+      isPaused = true;
+      isPlaying = false;
+      audio.pause();
+      clearTimeout(timer);
+      clearInterval(interval);
+      updateIcon('play');
     }
 
     function stopAudio() {
@@ -220,7 +231,7 @@
       isPaused = false;
       isPlaying = false;
       updateIcon('play');
-      document.getElementById("timerDisplay").innerText = "Timer: --:--";
+      timerDisplay.innerText = "Timer: --:--";
       progressBar.style.width = "0%";
     }
 
@@ -234,29 +245,40 @@
       timer = setTimeout(stopAudio, remainingTime * 1000);
     }
 
-    function updateTimerDisplay() {
+    function tick() {
       if (remainingTime <= 0) {
         clearInterval(interval);
-        document.getElementById("timerDisplay").innerText = "Timer: --:--";
         return;
       }
-
-      const minutes = Math.floor(remainingTime / 60);
-      const seconds = remainingTime % 60;
-      document.getElementById("timerDisplay").innerText = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       remainingTime--;
+      updateTimerDisplay();
+      updateProgressBar();
+    }
+
+    function updateTimerDisplay() {
+      const min = Math.floor(remainingTime / 60);
+      const sec = remainingTime % 60;
+      timerDisplay.innerText = `Timer: ${min}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
     function updateProgressBar() {
       if (totalTime === 0) return;
       const percent = ((totalTime - remainingTime) / totalTime) * 100;
-      progressBar.style.width = percent + "%";
+      progressBar.style.width = `${percent}%`;
     }
 
     function updateIcon(state) {
       playPauseIcon.className = state === 'play' ? 'fas fa-play' : 'fas fa-pause';
     }
-  </script>
 
+    // External pause handler
+    audio.addEventListener('pause', () => {
+      if (isPlaying && !isPaused) pauseAudio();
+    });
+
+    audio.addEventListener('play', () => {
+      if (!isPlaying && isPaused) startTimer();
+    });
+  </script>
 </body>
 </html>
