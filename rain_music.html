@@ -8,50 +8,71 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center;
       background: url('https://i.pinimg.com/originals/b8/16/ad/b816adb81f38dced4f3aabbb1bdf1b70.gif') no-repeat center center fixed;
       background-size: cover;
       color: white;
-      padding: 30px 15px;
+      text-align: center;
+      padding: 30px 20px;
     }
 
     h1 {
       font-size: 2em;
       margin-bottom: 20px;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
     }
 
-    .controls {
+    select {
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin: 10px 0 20px 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .music-controls {
       display: flex;
       justify-content: center;
+      align-items: center;
+      gap: 20px;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
     }
 
-    .controls button, select {
-      font-size: 20px;
-      background-color: rgba(0, 0, 0, 0.4);
-      color: white;
+    .play-pause-btn {
+      background-color: white;
+      color: #3498db;
+      font-size: 28px;
+      padding: 18px;
+      border-radius: 50%;
       border: none;
-      padding: 12px 18px;
-      border-radius: 50px;
       cursor: pointer;
       transition: 0.3s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
-    .controls button:hover, select:hover {
-      background-color: rgba(0, 0, 0, 0.6);
+    .play-pause-btn:hover {
+      background-color: #f0f0f0;
     }
 
-    .controls i {
-      pointer-events: none;
+    .icon-btn {
+      background-color: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 12px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .icon-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
     }
 
     #timerDisplay {
-      margin-top: 25px;
-      font-size: 24px;
+      margin-top: 20px;
+      font-size: 22px;
       font-weight: bold;
       text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
     }
@@ -61,27 +82,15 @@
       font-size: 16px;
       font-style: italic;
       color: #f0f0f0;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
 
     footer i {
       color: #ff5e7e;
     }
-
-    @media (max-width: 500px) {
-      .controls button {
-        padding: 14px;
-        border-radius: 50%;
-        font-size: 18px;
-      }
-
-      .controls button span {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
+
   <h1><i class="fas fa-cloud-rain"></i> Rain & Snore</h1>
 
   <audio id="rainAudio" loop>
@@ -89,25 +98,24 @@
     Your browser does not support the audio element.
   </audio>
 
-  <select id="timerSelect" title="Select Timer Duration">
-    <option value="1">1 Min</option>
-    <option value="30">30 Min</option>
+  <select id="timerSelect">
+    <option value="1">1 Minute</option>
+    <option value="30">30 Minutes</option>
     <option value="60">1 Hour</option>
-    <option value="90">1.5 Hour</option>
+    <option value="90">1.5 Hours</option>
   </select>
 
-  <div class="controls">
-    <button onclick="startTimer()" title="Start / Resume">
-      <i class="fas fa-play"></i> <span>Start</span>
+  <div class="music-controls">
+    <button class="icon-btn" onclick="addExtraTime()" title="Add 10 Minutes">
+      <i class="fas fa-plus"></i> Add 10 Min
     </button>
-    <button onclick="pauseAudio()" title="Pause">
-      <i class="fas fa-pause"></i> <span>Pause</span>
+
+    <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
+      <i id="playPauseIcon" class="fas fa-play"></i>
     </button>
-    <button onclick="stopAudio()" title="Stop">
-      <i class="fas fa-stop"></i> <span>Stop</span>
-    </button>
-    <button onclick="addExtraTime()" title="Add 10 Minutes">
-      <i class="fas fa-plus"></i> <span>+10 Min</span>
+
+    <button class="icon-btn" onclick="stopAudio()" title="Stop">
+      <i class="fas fa-stop"></i> Stop
     </button>
   </div>
 
@@ -119,10 +127,22 @@
 
   <script>
     const audio = document.getElementById("rainAudio");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const playPauseIcon = document.getElementById("playPauseIcon");
+
     let timer;
     let interval;
     let remainingTime = 0;
     let isPaused = false;
+    let isPlaying = false;
+
+    function togglePlayPause() {
+      if (!isPlaying) {
+        startTimer();
+      } else {
+        pauseAudio();
+      }
+    }
 
     function startTimer() {
       if (isPaused) {
@@ -130,6 +150,8 @@
         audio.play();
         interval = setInterval(updateTimerDisplay, 1000);
         timer = setTimeout(stopAudio, remainingTime * 1000);
+        updateIcon('pause');
+        isPlaying = true;
         return;
       }
 
@@ -144,14 +166,18 @@
 
       interval = setInterval(updateTimerDisplay, 1000);
       timer = setTimeout(stopAudio, remainingTime * 1000);
+      updateIcon('pause');
+      isPlaying = true;
     }
 
     function pauseAudio() {
-      if (!isPaused && remainingTime > 0) {
+      if (isPlaying && remainingTime > 0) {
         isPaused = true;
+        isPlaying = false;
         audio.pause();
         clearTimeout(timer);
         clearInterval(interval);
+        updateIcon('play');
       }
     }
 
@@ -162,6 +188,8 @@
       clearInterval(interval);
       remainingTime = 0;
       isPaused = false;
+      isPlaying = false;
+      updateIcon('play');
       document.getElementById("timerDisplay").innerText = "Timer: --:--";
     }
 
@@ -170,10 +198,7 @@
       remainingTime += 600;
       updateTimerDisplay();
       clearTimeout(timer);
-      timer = setTimeout(() => {
-        stopAudio();
-        alert("Rain sound stopped after extended time.");
-      }, remainingTime * 1000);
+      timer = setTimeout(stopAudio, remainingTime * 1000);
     }
 
     function updateTimerDisplay() {
@@ -188,6 +213,11 @@
       document.getElementById("timerDisplay").innerText = `Timer: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       remainingTime--;
     }
+
+    function updateIcon(state) {
+      playPauseIcon.className = state === 'play' ? 'fas fa-play' : 'fas fa-pause';
+    }
   </script>
+
 </body>
 </html>
